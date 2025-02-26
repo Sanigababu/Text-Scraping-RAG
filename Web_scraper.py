@@ -4,6 +4,18 @@ from gemini_rag import rag_pipeline
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+import asyncio
+import os
+
+# Fix asyncio issue in Python 3.10+
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.run(asyncio.sleep(0))
+
+# Fix Streamlit watching unnecessary files
+os.environ["STREAMLIT_WATCH_FILE"] = "false"
+
 
 dimension = 384
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -54,7 +66,3 @@ if not chunks or index.ntotal == 0:
 else:
     print(f"✅ FAISS index already exists with {index.ntotal} vectors.")
 
-# Example query
-user_query = "What is generative artificial intelligence?"
-answer = rag_pipeline(user_query)
-print("\n🔹 AI-Powered Response:\n", answer)

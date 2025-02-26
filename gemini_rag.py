@@ -5,12 +5,17 @@ import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 from faiss_manager import load_faiss_index, load_chunks
+import streamlit as st
+
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+
 
 # Load API key
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("❌ Gemini API key not found! Please check your .env file.")
+
 
 # Configure Gemini API
 genai.configure(api_key=GEMINI_API_KEY, transport="rest")
@@ -41,7 +46,7 @@ def rag_pipeline(user_query):
     context = "\n\n".join(relevant_chunks)
     prompt = f"### Context:\n{context}\n\n### Question:\n{user_query}\n\n### Answer (Explain in detail and provide examples):"
 
-    gemini_model = genai.GenerativeModel("gemini-pro")
+    gemini_model = genai.GenerativeModel("gemini-1.5-pro-latest")
     response = gemini_model.generate_content(prompt, stream=False)
 
     return f"📖 **Context Extracted:**\n```\n{context}\n```\n\n🧠 **AI Response:**\n**{response.text}**"
